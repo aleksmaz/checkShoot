@@ -37,7 +37,7 @@
 			import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
 			let cameraPersp, cameraOrtho, currentCamera;
-			let scene, renderer, control, orbit;
+			let scene, renderer, control, control2, control3, orbit;
 
 			init();
 			render();
@@ -66,7 +66,7 @@
 				scene.add( light );
 
 
-				const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
+				const geometry = new THREE.TorusGeometry( 100, 3, 16, 100 );
 				const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 
 
@@ -83,11 +83,47 @@
 
 				} );
 
+				control2 = new TransformControls( currentCamera, renderer.domElement );
+				control2.addEventListener( 'change', render );
+
+				control2.addEventListener( 'dragging-changed', function ( event ) {
+
+					orbit.enabled = ! event.value;
+
+				} );
+
+				control3 = new TransformControls( currentCamera, renderer.domElement );
+				control3.addEventListener( 'change', render );
+
+				control3.addEventListener( 'dragging-changed', function ( event ) {
+
+					orbit.enabled = ! event.value;
+
+				} );
+
 				const torus = new THREE.Mesh( geometry, material );
+				torus.rotation.x = Math.PI / 2;
+				torus.position.y += 100
+
+				const geometry2 = new THREE.SphereGeometry( 15, 32, 16 );
+				const material2 = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+				const sphere = new THREE.Mesh( geometry2, material2 );
+				sphere.position.set(20, 20 , 100)
+
+				const geometry3 = new THREE.SphereGeometry( 15, 32, 16 );
+				const material3 = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+				const sphere2 = new THREE.Mesh( geometry3, material3 );
+				scene.add( sphere );
+				scene.add( sphere2 );
 				scene.add( torus);
 
 				control.attach( torus );
+				control2.attach( sphere);
+				control3.attach(sphere2)
+
 				scene.add( control );
+				scene.add( control2 );
+				scene.add(control3)
 
 				window.addEventListener( 'resize', onWindowResize );
 
