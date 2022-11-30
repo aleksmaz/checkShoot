@@ -67,7 +67,7 @@
 
 
 				const geometry = new THREE.TorusGeometry( 100, 3, 16, 100 );
-				const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+				const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
 
 				orbit = new OrbitControls( currentCamera, renderer.domElement );
@@ -80,6 +80,7 @@
 				control.addEventListener( 'dragging-changed', function ( event ) {
 
 					orbit.enabled = ! event.value;
+					
 
 				} );
 
@@ -89,6 +90,7 @@
 				control2.addEventListener( 'dragging-changed', function ( event ) {
 
 					orbit.enabled = ! event.value;
+					checkShoot()
 
 				} );
 
@@ -98,32 +100,60 @@
 				control3.addEventListener( 'dragging-changed', function ( event ) {
 
 					orbit.enabled = ! event.value;
-
+					checkShoot()
 				} );
 
 				const torus = new THREE.Mesh( geometry, material );
 				torus.rotation.x = Math.PI / 2;
 				torus.position.y += 100
+				torus.name = "torus"
 
 				const geometry2 = new THREE.SphereGeometry( 15, 32, 16 );
 				const material2 = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 				const sphere = new THREE.Mesh( geometry2, material2 );
-				sphere.position.set(20, 20 , 100)
+				sphere.position.set(500, 100 , 100)
+				sphere.name = "sphere1"
 
 				const geometry3 = new THREE.SphereGeometry( 15, 32, 16 );
 				const material3 = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 				const sphere2 = new THREE.Mesh( geometry3, material3 );
+				sphere2.name = "sphere2"
 				scene.add( sphere );
 				scene.add( sphere2 );
 				scene.add( torus);
 
-				control.attach( torus );
+				// control.attach( torus );
 				control2.attach( sphere);
 				control3.attach(sphere2)
 
 				scene.add( control );
 				scene.add( control2 );
 				scene.add(control3)
+
+				function checkShoot () {
+					if(scene.getObjectByName("line")) {
+						scene.remove(scene.getObjectByName("line"))
+					}
+					const sphere1 = scene.getObjectByName('sphere1')
+					const sphere2 = scene.getObjectByName('sphere2')
+					console.log('object1', sphere1, "object2", sphere2)
+
+					let tG = new THREE.BufferGeometry().setFromPoints([
+	                  sphere1.position,
+                      sphere2.position
+                    ]);
+                    let tM = new THREE.LineBasicMaterial({color: "yellow"});
+                    let tracker = new THREE.Line(tG, tM);
+					tracker.name = "line"
+					scene.add(tracker)
+					const torus = scene.getObjectByName("torus")
+					if(sphere1.position.y > sphere2.position.y) {
+                      torus.material.color.setHex(0xAAFF00)
+					}else {
+					  torus.material.color.setHex(0xff0000)
+					}
+					
+				}
 
 				window.addEventListener( 'resize', onWindowResize );
 
